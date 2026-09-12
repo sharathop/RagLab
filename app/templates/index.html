@@ -25,6 +25,9 @@
           hx-target="#upload-status"
           hx-swap="innerHTML"
           hx-indicator="#upload-spinner"
+          {% if session_data.filename %}
+          hx-confirm="You already have '{{ session_data.filename }}' loaded, with its chunks and Q&amp;A history tied to it. Uploading a new PDF will completely replace it — the current document's index cannot be recovered afterward. Continue?"
+          {% endif %}
           enctype="multipart/form-data"
           class="mt-4">
 
