@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🧪 RAGLABB
+# 🧪 RAGLAB
 
 **A configurable, self-evaluating RAG pipeline — deployed live, not just a notebook demo.**
 
