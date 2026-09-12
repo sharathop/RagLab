@@ -1,0 +1,164 @@
+<div class="space-y-6">
+  <!-- 1. Generated Answer -->
+  <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+      <div class="flex items-center space-x-2">
+        <span class="w-6 h-6 rounded bg-sky-100 text-sky-700 flex items-center justify-center">
+          <i data-lucide="message-square-quote" class="w-4 h-4"></i>
+        </span>
+        <h3 class="text-sm font-semibold text-slate-900">Generated Answer</h3>
+      </div>
+      <span class="text-xs text-slate-500 font-mono">Groq &bull; Llama 3.3 70B</span>
+    </div>
+
+    <div class="text-sm text-slate-800 leading-relaxed whitespace-pre-line bg-slate-50/50 p-4 rounded-lg border border-slate-100">
+      {{ answer }}
+    </div>
+  </div>
+
+  <!-- 2. Evaluation Metrics (Raw Scores Only, No Composite Verdict) -->
+  <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+      <div class="flex items-center space-x-2">
+        <span class="w-6 h-6 rounded bg-indigo-100 text-indigo-700 flex items-center justify-center">
+          <i data-lucide="gauge" class="w-4 h-4"></i>
+        </span>
+        <h3 class="text-sm font-semibold text-slate-900">Multi-Metric Raw Evaluation</h3>
+      </div>
+      <span class="text-xs text-slate-500">Independent metric scores (0.00 – 1.00)</span>
+    </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <!-- NLI -->
+      <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between text-xs text-slate-600 mb-1">
+          <span class="font-medium">NLI Faithfulness</span>
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-slate-400"></i>
+        </div>
+        <div class="text-2xl font-bold font-mono text-slate-900">{{ "%.4f" | format(evaluation.nli_score) }}</div>
+        <span class="text-[10px] text-slate-500 block mt-0.5">Context entailment</span>
+      </div>
+
+      <!-- Cosine Similarity -->
+      <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between text-xs text-slate-600 mb-1">
+          <span class="font-medium">Cosine Similarity</span>
+          <i data-lucide="compass" class="w-3.5 h-3.5 text-slate-400"></i>
+        </div>
+        <div class="text-2xl font-bold font-mono text-slate-900">{{ "%.4f" | format(evaluation.cosine_score) }}</div>
+        <span class="text-[10px] text-slate-500 block mt-0.5">Question vs. answer</span>
+      </div>
+
+      <!-- BERTScore -->
+      <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+        <div class="flex items-center justify-between text-xs text-slate-600 mb-1">
+          <span class="font-medium">BERTScore F1</span>
+          <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-400"></i>
+        </div>
+        <div class="text-2xl font-bold font-mono text-slate-900">{{ "%.4f" | format(evaluation.bertscore) }}</div>
+        <span class="text-[10px] text-slate-500 block mt-0.5">Context vs. answer</span>
+      </div>
+    </div>
+
+    <!-- MANDATORY WARNING NEAR COSINE SIMILARITY -->
+    <div class="mt-4 p-3 bg-amber-50/80 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-start space-x-2">
+      <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+      <p class="leading-relaxed">
+        <strong>Important Evaluation Principle:</strong> Cosine similarity measures semantic similarity. It does not prove that the answer is factually supported by the context.
+      </p>
+    </div>
+
+    {% if evaluation.cosine_warning %}
+    <div class="mt-2 p-3 bg-amber-50/80 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-start space-x-2">
+      <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+      <p class="leading-relaxed">
+        <strong>Cosine score may be misleading here:</strong> {{ evaluation.cosine_warning }}
+      </p>
+    </div>
+    {% endif %}
+
+    {% if retrieval_warning %}
+    <div class="mt-2 p-3 bg-red-50/80 border border-red-200 rounded-lg text-xs text-red-900 flex items-start space-x-2">
+      <i data-lucide="alert-triangle" class="w-4 h-4 text-red-600 shrink-0 mt-0.5"></i>
+      <p class="leading-relaxed">{{ retrieval_warning }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- 3. Latency Breakdown -->
+  <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+      <div class="flex items-center space-x-2">
+        <span class="w-6 h-6 rounded bg-emerald-100 text-emerald-700 flex items-center justify-center">
+          <i data-lucide="timer" class="w-4 h-4"></i>
+        </span>
+        <h3 class="text-sm font-semibold text-slate-900">Latency Breakdown</h3>
+      </div>
+      <div class="text-xs font-mono font-semibold text-slate-800 bg-slate-100 px-2.5 py-1 rounded">
+        Total: {{ "%.1f" | format(performance.total_time_ms) }} ms
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
+      <div class="p-2.5 bg-slate-50 rounded border border-slate-100 flex justify-between items-center">
+        <span class="text-slate-500">Retrieval:</span>
+        <span class="font-bold text-slate-800">{{ "%.1f" | format(performance.retrieval_time_ms) }} ms</span>
+      </div>
+
+      <div class="p-2.5 bg-slate-50 rounded border border-slate-100 flex justify-between items-center">
+        <span class="text-slate-500">Reranking:</span>
+        <span class="font-bold text-slate-800">{{ "%.1f" | format(performance.reranking_time_ms) }} ms</span>
+      </div>
+
+      <div class="p-2.5 bg-slate-50 rounded border border-slate-100 flex justify-between items-center">
+        <span class="text-slate-500">LLM Generation:</span>
+        <span class="font-bold text-slate-800">{{ "%.1f" | format(performance.llm_time_ms) }} ms</span>
+      </div>
+
+      <div class="p-2.5 bg-slate-50 rounded border border-slate-100 flex justify-between items-center">
+        <span class="text-slate-500">Evaluation:</span>
+        <span class="font-bold text-slate-800">{{ "%.1f" | format(performance.evaluation_time_ms) }} ms</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Retrieved Sources with Page & Chunk ID -->
+  <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-5">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+      <div class="flex items-center space-x-2">
+        <span class="w-6 h-6 rounded bg-amber-100 text-amber-700 flex items-center justify-center">
+          <i data-lucide="book-open" class="w-4 h-4"></i>
+        </span>
+        <h3 class="text-sm font-semibold text-slate-900">Retrieved Sources ({{ sources | length }})</h3>
+      </div>
+      <span class="text-xs text-slate-500">Supplied context to Llama 3.3 70B</span>
+    </div>
+
+    {% if sources %}
+    <div class="space-y-3">
+      {% for source in sources %}
+      <div class="border border-slate-200 rounded-lg p-3 bg-slate-50/50 hover:bg-white transition-colors">
+        <div class="flex items-center justify-between text-xs mb-1.5">
+          <div class="flex items-center space-x-2 font-mono">
+            <span class="px-2 py-0.5 rounded bg-sky-100 text-sky-800 font-semibold">Page {{ source.page }}</span>
+            <span class="text-slate-500">{{ source.chunk_id }}</span>
+            {% if source.reranked %}
+            <span class="px-1.5 py-0.2 bg-purple-100 text-purple-700 text-[10px] rounded">CrossEncoder Reranked</span>
+            {% endif %}
+          </div>
+          <span class="text-xs font-mono font-medium text-slate-600">Relevance: {{ "%.4f" | format(source.score) }}</span>
+        </div>
+        <p class="text-xs text-slate-700 leading-relaxed font-sans bg-white p-2.5 rounded border border-slate-100">
+          {{ source.text }}
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-6 text-xs text-slate-500">
+      No chunks were retrieved for this query.
+    </div>
+    {% endif %}
+  </div>
+</div>
+<script>lucide.createIcons();</script>

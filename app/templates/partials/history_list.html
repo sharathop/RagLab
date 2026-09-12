@@ -1,0 +1,40 @@
+{% if history %}
+<div class="divide-y divide-slate-200">
+  {% for item in history %}
+  <div class="py-3.5 first:pt-0 last:pb-0">
+    <div class="flex items-center justify-between text-xs mb-1">
+      <span class="font-semibold text-slate-800">Q: {{ item.question }}</span>
+      <span class="text-slate-400 font-mono">{{ item.created_at }}</span>
+    </div>
+
+    <div class="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-100 my-1 font-sans max-h-24 overflow-y-auto whitespace-pre-line">
+  {{ item.answer }}
+    </div>  
+
+
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-mono text-slate-500 mt-1.5">
+      {% if item.evaluation_scores %}
+      <span class="text-indigo-700">NLI: {{ "%.3f" | format(item.evaluation_scores.nli_score) }}</span>
+      <span class="text-sky-700">Cosine: {{ "%.3f" | format(item.evaluation_scores.cosine_score) }}</span>
+      <span class="text-emerald-700">BERTScore: {{ "%.3f" | format(item.evaluation_scores.bertscore) }}</span>
+      {% elif item.nli_score is defined and item.nli_score is not none %}
+      <span class="text-indigo-700">NLI: {{ "%.3f" | format(item.nli_score) }}</span>
+      <span class="text-sky-700">Cosine: {{ "%.3f" | format(item.cosine_score) }}</span>
+      <span class="text-emerald-700">BERTScore: {{ "%.3f" | format(item.bertscore) }}</span>
+      {% endif %}
+      <span class="text-slate-400">&bull;</span>
+      <span>Total Latency: {{ "%.0f" | format(item.total_time_ms) }}ms</span>
+      {% if item.config %}
+      <span class="text-slate-400">&bull;</span>
+      <span class="text-slate-600">Config: [chunk={{ item.config.chunk_size }}, k={{ item.config.top_k }}, rerank={{ item.config.reranking_enabled }}]</span>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-6 text-xs text-slate-400">
+  No query history logged in PostgreSQL yet. Run your first query above!
+</div>
+{% endif %}
+<script>lucide.createIcons();</script>

@@ -1,0 +1,20 @@
+<div>
+  {% if notifications %}
+  <div class="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-start space-x-2">
+    <i data-lucide="info" class="w-4 h-4 text-amber-600 shrink-0 mt-0.5"></i>
+    <div>
+      <span class="font-semibold block">Automatic Dependency Resolution</span>
+      <ul class="list-disc list-inside mt-1 space-y-0.5 text-amber-800">
+        {% for note in notifications %}
+        <li>{{ note }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="text-xs text-slate-500 font-mono mb-2">
+    Active Resolved Components: <strong class="text-slate-800">{{ resolved | join(', ') }}</strong>
+  </div>
+</div>
+<script>lucide.createIcons();</script>

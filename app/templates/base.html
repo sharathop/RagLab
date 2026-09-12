@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title | default("Self-Correcting RAG — Configurable RAG & Evaluation Platform") }}</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              900: '#0c4a6e',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .htmx-indicator {
+      display: none;
+    }
+    .htmx-request .htmx-indicator {
+      display: inline-flex;
+    }
+    .htmx-request.htmx-indicator {
+      display: inline-flex;
+    }
+  </style>
+</head>
+<body class="min-h-full flex flex-col text-slate-800 antialiased font-sans">
+  <!-- Top Navigation Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-lg bg-sky-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+          <i data-lucide="cpu" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-semibold text-slate-900 tracking-tight">Self-Correcting RAG</h1>
+          <p class="text-xs text-slate-500 font-medium">Configurable Pipeline & Multi-Metric Evaluation Platform</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <!-- DB & Service status badges -->
+        <div class="flex items-center space-x-2 text-xs bg-slate-100 px-2.5 py-1.5 rounded-md border border-slate-200">
+          <span class="inline-block w-2 h-2 rounded-full {% if db_connected %}bg-emerald-500{% else %}bg-rose-500{% endif %}"></span>
+          <span class="font-medium text-slate-600">PostgreSQL</span>
+        </div>
+
+        <div class="flex items-center space-x-2 text-xs bg-slate-100 px-2.5 py-1.5 rounded-md border border-slate-200">
+          <span class="inline-block w-2 h-2 rounded-full {% if groq_configured %}bg-emerald-500{% else %}bg-amber-500{% endif %}"></span>
+          <span class="font-medium text-slate-600">Groq LLM</span>
+        </div>
+
+        <button 
+          hx-post="/reset" 
+          hx-confirm="Are you sure you want to reset the current session and in-memory FAISS index?"
+          hx-target="#main-container"
+          hx-swap="outerHTML"
+          class="inline-flex items-center px-2.5 py-1.5 border border-slate-300 text-xs font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 hover:text-slate-900 transition-colors">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5 mr-1 text-slate-400"></i>
+          Reset Session
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Banner if Groq API Key missing -->
+  {% if not groq_configured %}
+  <div class="bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-800 flex items-center justify-between">
+    <div class="flex items-center space-x-2 max-w-7xl mx-auto w-full">
+      <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 shrink-0"></i>
+      <span><strong>GROQ_API_KEY</strong> is not set. You can upload PDFs, chunk, embed, and retrieve chunks via FAISS. Set <code>GROQ_API_KEY</code> in <code>.env</code> to enable Llama 3.3 70B answer generation.</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Main Content Body -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-4 mt-auto text-center text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+      <span>Self-Correcting RAG Learning Platform &bull; Local-First Architecture</span>
+      <span class="text-slate-400">PostgreSQL + FAISS (In-Memory) + Groq Llama 3.3 70B + Jinja2/HTMX</span>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+    document.body.addEventListener('htmx:afterSwap', () => {
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>

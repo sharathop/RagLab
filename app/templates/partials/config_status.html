@@ -1,0 +1,22 @@
+<div class="rounded-lg bg-sky-50 border border-sky-200 p-4 text-sky-950 text-sm">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center space-x-2">
+      <i data-lucide="sliders" class="w-5 h-5 text-sky-600"></i>
+      <span class="font-semibold text-sky-900">Configuration Saved (v{{ config_version }})</span>
+    </div>
+    <span class="text-xs bg-sky-100 text-sky-800 font-mono px-2 py-0.5 rounded">Stored in PostgreSQL</span>
+  </div>
+
+  <p class="text-xs text-sky-700 mt-1">
+    {{ message | default("Pipeline parameters updated successfully.") }}
+  </p>
+
+  <div class="mt-2 text-xs font-mono bg-white/80 p-2.5 rounded border border-sky-100 flex flex-wrap gap-x-4 gap-y-1">
+    <span>chunk_size: <strong>{{ config.chunk_size }}</strong></span>
+    <span>overlap: <strong>{{ config.chunk_overlap }}</strong></span>
+    <span>top_k: <strong>{{ config.top_k }}</strong></span>
+    <span>model: <strong>{{ config.embedding_model }}</strong></span>
+    <span>rerank: <strong>{{ "Enabled" if config.reranking_enabled else "Disabled" }}</strong></span>
+  </div>
+</div>
+<script>lucide.createIcons();</script>
