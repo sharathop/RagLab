@@ -15,4 +15,4 @@ numpy>=1.26.0
 sentence-transformers>=2.5.0
 bert-score>=0.3.13
 scikit-learn>=1.4.0
-pytest>=8.0.0
+
